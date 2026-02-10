@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="btfwkD" name="BasicJuceSynth" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginVST3Category="Instrument">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginVST3Category="Instrument"
+              pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="JcgiAC" name="BasicJuceSynth">
     <GROUP id="{339BA40A-2ACC-4F09-457D-7C43F68DBE6C}" name="Source">
       <FILE id="H0ocxn" name="PluginProcessor.cpp" compile="1" resource="0"
@@ -12,6 +13,10 @@
             file="Source/PluginEditor.cpp"/>
       <FILE id="WNtZ2A" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
+    <FILE id="E8T7Z6" name="SineWaveChannel.cpp" compile="1" resource="0"
+          file="Source/SineWaveChannel.cpp"/>
+    <FILE id="wYvPiY" name="SineWaveChannel.h" compile="0" resource="0"
+          file="Source/SineWaveChannel.h"/>
   </MAINGROUP>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
