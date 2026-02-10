@@ -2,7 +2,8 @@
 
 <JUCERPROJECT id="btfwkD" name="BasicJuceSynth" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginVST3Category="Instrument"
-              pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
+              pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
+              cppLanguageStandard="20">
   <MAINGROUP id="JcgiAC" name="BasicJuceSynth">
     <GROUP id="{339BA40A-2ACC-4F09-457D-7C43F68DBE6C}" name="Source">
       <FILE id="H0ocxn" name="PluginProcessor.cpp" compile="1" resource="0"
