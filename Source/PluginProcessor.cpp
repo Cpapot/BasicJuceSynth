@@ -143,6 +143,8 @@ void BasicJuceSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     auto totalNumOutputChannels = getTotalNumOutputChannels();
     
     buffer.clear();
+
+    keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
     synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 
 }

@@ -54,8 +54,12 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    // Provide access to the processor's MidiKeyboardState for the editor
+    juce::MidiKeyboardState& getKeyboardState() noexcept { return keyboardState; }
+
 private:
-    juce::Synthesiser   synth;
+    juce::Synthesiser       synth;
+    juce::MidiKeyboardState keyboardState;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicJuceSynthAudioProcessor)
