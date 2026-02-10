@@ -8,6 +8,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "SineWaveVoice.h"
 
 //==============================================================================
 BasicJuceSynthAudioProcessor::BasicJuceSynthAudioProcessor()
@@ -22,6 +23,10 @@ BasicJuceSynthAudioProcessor::BasicJuceSynthAudioProcessor()
                        )
 #endif
 {
+    for (int i = 0; i < 16; ++i) {
+        synth.addVoice(new SineWaveVoice());
+    }
+    synth.addSound(new SineWaveSound());
 }
 
 BasicJuceSynthAudioProcessor::~BasicJuceSynthAudioProcessor()
@@ -96,10 +101,7 @@ void BasicJuceSynthAudioProcessor::prepareToPlay (double sampleRate, int samples
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
 
-	this->sineWaves.resize(getTotalNumOutputChannels());
-
-    for (auto& sineWave : this->sineWaves)
-		sineWave.prepare(sampleRate);
+    synth.setCurrentPlaybackSampleRate(sampleRate);
 }
 
 void BasicJuceSynthAudioProcessor::releaseResources()
@@ -139,20 +141,10 @@ void BasicJuceSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
+    
+    buffer.clear();
+    synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
-
-    for (int channel = 0; channel < buffer.getNumChannels(); ++channel)
-    {
-		this->sineWaves[channel].process(buffer.getWritePointer(channel), buffer.getNumSamples());
-    }
 }
 
 //==============================================================================
