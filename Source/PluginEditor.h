@@ -31,5 +31,8 @@ private:
     juce::MidiKeyboardState&        keyboardState;
     juce::MidiKeyboardComponent     keyboardComponent;
 
+    juce::ComboBox                                                          waveSelector;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> waveAttachment;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicJuceSynthAudioProcessorEditor)
 };

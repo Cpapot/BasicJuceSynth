@@ -8,15 +8,13 @@
     <GROUP id="{339BA40A-2ACC-4F09-457D-7C43F68DBE6C}" name="Source">
       <FILE id="H0ocxn" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
-      <FILE id="NqKKIc" name="SineWaveVoice.h" compile="0" resource="0" file="Source/SineWaveVoice.h"/>
-      <FILE id="wYvPiY" name="SineWaveChannel.h" compile="0" resource="0"
-            file="Source/SineWaveChannel.h"/>
+      <FILE id="NqKKIc" name="WaveVoice.h" compile="0" resource="0" file="Source/WaveVoice.h"/>
       <FILE id="TWYm9J" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
-      <FILE id="E8T7Z6" name="SineWaveChannel.cpp" compile="1" resource="0"
-            file="Source/SineWaveChannel.cpp"/>
-      <FILE id="SHmZp0" name="SineWaveVoice.cpp" compile="1" resource="0"
-            file="Source/SineWaveVoice.cpp"/>
+      <FILE id="WCjLW0" name="AbstractVoice.cpp" compile="1" resource="0"
+            file="Source/AbstractVoice.cpp"/>
+      <FILE id="prXWVF" name="AbstractVoice.h" compile="0" resource="0" file="Source/AbstractVoice.h"/>
+      <FILE id="SHmZp0" name="WaveVoice.cpp" compile="1" resource="0" file="Source/WaveVoice.cpp"/>
       <FILE id="mnCVWQ" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="WNtZ2A" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>

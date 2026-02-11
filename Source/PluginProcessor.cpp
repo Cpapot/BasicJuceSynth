@@ -8,7 +8,28 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "SineWaveVoice.h"
+#include "WaveVoice.h"
+
+//==============================================================================
+static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
+{
+    using namespace juce;
+
+    AudioProcessorValueTreeState::ParameterLayout layout;
+
+    // Wave type parameter (used by the voices)
+    StringArray waveChoices { "Sine", "Saw", "Square", "Triangle", "Noise" };
+    layout.add (std::make_unique<AudioParameterChoice> ("WAVE_TYPE", "Wave Type", waveChoices, 0));
+
+    // Add more parameters here as needed. Example:
+    // layout.add(std::make_unique<AudioParameterFloat>(
+    //     "gain",
+    //     "Gain",
+    //     juce::NormalisableRange<float>(0.0f, 1.0f),
+    //     0.5f));
+    
+    return layout;
+}
 
 //==============================================================================
 BasicJuceSynthAudioProcessor::BasicJuceSynthAudioProcessor()
@@ -20,13 +41,16 @@ BasicJuceSynthAudioProcessor::BasicJuceSynthAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ),
+#else
+     :
 #endif
+      apvts(*this, nullptr, "PARAMETERS", createParameterLayout())
 {
     for (int i = 0; i < 16; ++i) {
-        synth.addVoice(new SineWaveVoice());
+        synth.addVoice(new WaveVoice());
     }
-    synth.addSound(new SineWaveSound());
+    synth.addSound(new VoiceSound());
 }
 
 BasicJuceSynthAudioProcessor::~BasicJuceSynthAudioProcessor()
@@ -143,6 +167,17 @@ void BasicJuceSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     auto totalNumOutputChannels = getTotalNumOutputChannels();
     
     buffer.clear();
+
+    int selectedType = 0;
+    if (auto* p = apvts.getRawParameterValue ("WAVE_TYPE"))
+        selectedType = juce::jlimit (0, 4, (int) std::lround (*p));
+
+    // Mettre à jour toutes les voix du synthé
+    for (int i = 0; i < synth.getNumVoices(); ++i)
+    {
+            if (auto* v = dynamic_cast<WaveVoice*>(synth.getVoice(i)))
+                v->setWaveType (selectedType);
+    }
 
     keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
     synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());

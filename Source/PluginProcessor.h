@@ -9,7 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "SineWaveVoice.h"
+#include "WaveVoice.h"
 
 //==============================================================================
 /**
@@ -57,10 +57,12 @@ public:
     // Provide access to the processor's MidiKeyboardState for the editor
     juce::MidiKeyboardState& getKeyboardState() noexcept { return keyboardState; }
 
+    juce::AudioProcessorValueTreeState                  apvts;
+
+
 private:
     juce::Synthesiser       synth;
     juce::MidiKeyboardState keyboardState;
-
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicJuceSynthAudioProcessor)
 };
