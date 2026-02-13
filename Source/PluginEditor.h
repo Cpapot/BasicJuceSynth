@@ -31,8 +31,15 @@ private:
     juce::MidiKeyboardState&        keyboardState;
     juce::MidiKeyboardComponent     keyboardComponent;
 
+    juce::ComboBox                                                          unisonSelector;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> unisonAttachment;
+
     juce::ComboBox                                                          waveSelector;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> waveAttachment;
+
+    juce::Slider                                                            unisonDetuneKnob;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>   unisonDetuneAttachment;
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicJuceSynthAudioProcessorEditor)
 };

@@ -27,8 +27,23 @@ BasicJuceSynthAudioProcessorEditor::BasicJuceSynthAudioProcessorEditor (BasicJuc
     waveSelector.addItem("Square", 3);
     waveSelector.addItem("Triangle", 4);
     waveSelector.addItem("Noise", 5);
-    waveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
-        audioProcessor.apvts, "WAVE_TYPE", waveSelector);
+    waveAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "WAVE_TYPE", waveSelector);
+
+
+    addAndMakeVisible(unisonSelector);
+    for (int i = 1; i <= 16; ++i)
+    {
+        unisonSelector.addItem(juce::String(i), i);
+    }
+    unisonSelector.setSelectedId(1);
+    unisonAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "UNISON_COUNT", unisonSelector);
+
+    addAndMakeVisible(unisonDetuneKnob);
+    unisonDetuneKnob.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
+    unisonDetuneKnob.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    unisonDetuneKnob.setRange(0.0, 20.0, 0.1);
+    unisonDetuneKnob.setValue(0.5f);
+    unisonDetuneAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "UNISON_DETUNE", unisonDetuneKnob);
 }
 
 BasicJuceSynthAudioProcessorEditor::~BasicJuceSynthAudioProcessorEditor()
@@ -44,6 +59,8 @@ void BasicJuceSynthAudioProcessorEditor::paint (juce::Graphics& g)
 
     keyboardComponent.setBounds(20, 410, getWidth() - 40, 50);
     waveSelector.setBounds(20, 20, 100, 30);
+    unisonSelector.setBounds(20, 55, 60, 30);
+    unisonDetuneKnob.setBounds(100, 100, 50, 50);
 }
 
 void BasicJuceSynthAudioProcessorEditor::resized()

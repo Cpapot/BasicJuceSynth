@@ -21,6 +21,11 @@ static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout
     StringArray waveChoices { "Sine", "Saw", "Square", "Triangle", "Noise" };
     layout.add (std::make_unique<AudioParameterChoice> ("WAVE_TYPE", "Wave Type", waveChoices, 0));
 
+    StringArray unisonChoice{ "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16" };
+    layout.add(std::make_unique<AudioParameterChoice>("UNISON_COUNT", "Unison Count", unisonChoice, 0));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>("UNISON_DETUNE", "Detune", juce::NormalisableRange<float>(0.0f, 20.0f), 0.5f));
+
     // Add more parameters here as needed. Example:
     // layout.add(std::make_unique<AudioParameterFloat>(
     //     "gain",
@@ -55,6 +60,8 @@ BasicJuceSynthAudioProcessor::BasicJuceSynthAudioProcessor()
 
 BasicJuceSynthAudioProcessor::~BasicJuceSynthAudioProcessor()
 {
+    synth.clearSounds();
+    synth.clearVoices();
 }
 
 //==============================================================================
@@ -172,11 +179,24 @@ void BasicJuceSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     if (auto* p = apvts.getRawParameterValue ("WAVE_TYPE"))
         selectedType = juce::jlimit (0, 4, (int) std::lround (*p));
 
+    int unisonCount = 1;
+    if (auto* p = apvts.getRawParameterValue("UNISON_COUNT"))
+        unisonCount = juce::jlimit(0, 15, (int)std::lround(*p));
+
+    float detuneValue = 0.5f;
+
+    if (auto* p = apvts.getRawParameterValue("UNISON_DETUNE"))
+        detuneValue = *p;
+
     // Mettre à jour toutes les voix du synthé
     for (int i = 0; i < synth.getNumVoices(); ++i)
     {
-            if (auto* v = dynamic_cast<WaveVoice*>(synth.getVoice(i)))
-                v->setWaveType (selectedType);
+        if (auto* v = dynamic_cast<WaveVoice*>(synth.getVoice(i)))
+        {
+            v->setWaveType(selectedType);
+            v->setCurrentActiveUnisonVoices(unisonCount + 1);
+            v->setDetuneParam(detuneValue);
+        }
     }
 
     keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
