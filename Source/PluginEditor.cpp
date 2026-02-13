@@ -41,7 +41,7 @@ BasicJuceSynthAudioProcessorEditor::BasicJuceSynthAudioProcessorEditor (BasicJuc
     addAndMakeVisible(unisonDetuneKnob);
     unisonDetuneKnob.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     unisonDetuneKnob.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
-    unisonDetuneKnob.setRange(0.0, 20.0, 0.1);
+    unisonDetuneKnob.setRange(0.0f, 100.0f, 0.1f);
     unisonDetuneKnob.setValue(0.5f);
     unisonDetuneAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "UNISON_DETUNE", unisonDetuneKnob);
 }

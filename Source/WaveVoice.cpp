@@ -1,4 +1,5 @@
 #include "WaveVoice.h"
+#include <cmath>
 
 void WaveVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples)
 {
@@ -9,6 +10,12 @@ void WaveVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int star
 	const int numChannels = outputBuffer.getNumChannels();
 	const int numVoices = juce::jlimit (1, MAX_UNISON, currentActiveUnisonVoices);
 
+	// Precompute per-voice linear interpolation step for phaseIncrement
+	// (step = (target - current) / numSamples)
+	float steps[MAX_UNISON] = {};
+	for (int v = 0; v < numVoices; ++v)
+		steps[v] = (phaseIncrementTargets[v] - phaseIncrements[v]) / static_cast<float>(juce::jmax(1, numSamples));
+
 	for (int sample = 0; sample < numSamples; ++sample)
 	{
 		float leftSum = 0.0f;
@@ -16,6 +23,8 @@ void WaveVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int star
 
 		for (int v = 0; v < numVoices; ++v)
 		{
+			phaseIncrements[v] += steps[v];
+
 			const float ph = phases[v];
 			const float phInc = phaseIncrements[v];
 
@@ -51,11 +60,14 @@ void WaveVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int star
 			phases[v] = ph + phInc;
 			if (phases[v] >= 1.0f)
 				phases[v] -= 1.0f;
+			else if (phases[v] < 0.0f)
+				phases[v] += 1.0f;
 		}
 
-		// average voices so overall amplitude remains consistent
-		leftSum /= static_cast<float> (numVoices);
-		rightSum /= static_cast<float> (numVoices);
+		// normalize using constant-power normalization (1/sqrt(N)) to preserve perceived loudness
+		const float invSqrt = 1.0f / std::sqrt(static_cast<float> (numVoices));
+		leftSum *= invSqrt;
+		rightSum *= invSqrt;
 
 		// apply a tiny attack envelope if requested to prevent clicks
 		if (attackSamplesRemaining > 0)
@@ -87,4 +99,6 @@ void WaveVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int star
 			}
 		}
 	}
+	for (int v = 0; v < numVoices; ++v)
+		phaseIncrements[v] = phaseIncrementTargets[v];
 }

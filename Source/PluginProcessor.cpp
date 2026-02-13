@@ -24,7 +24,7 @@ static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout
     StringArray unisonChoice{ "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16" };
     layout.add(std::make_unique<AudioParameterChoice>("UNISON_COUNT", "Unison Count", unisonChoice, 0));
 
-    layout.add(std::make_unique<juce::AudioParameterFloat>("UNISON_DETUNE", "Detune", juce::NormalisableRange<float>(0.0f, 20.0f), 0.5f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("UNISON_DETUNE", "Detune", juce::NormalisableRange<float>(0.0f, 100.0f), 0.0f));
 
     // Add more parameters here as needed. Example:
     // layout.add(std::make_unique<AudioParameterFloat>(
@@ -188,20 +188,40 @@ void BasicJuceSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     if (auto* p = apvts.getRawParameterValue("UNISON_DETUNE"))
         detuneValue = *p;
 
-    // Mettre à jour toutes les voix du synthé
+    const double sr = getSampleRate();
+    const int numSamples = buffer.getNumSamples();
+
+    if (!smoothedDetuneInitialized)
+    {
+        smoothedDetune = detuneValue;
+        smoothedDetuneInitialized = true;
+    }
+
+    // compute block alpha: alphaBlock = 1 - exp(-numSamples / (tau * sr))
+    const float alphaBlock = 1.0f - std::exp(-static_cast<float>(buffer.getNumSamples()) / (detuneTauSeconds * (float)getSampleRate()));
+    smoothedDetune += alphaBlock * (detuneValue - smoothedDetune);
+
+    if (std::fabs(smoothedDetune - lastSentDetune) > detuneUpdateThreshold)
+    {
+        for (auto i = 0; i < synth.getNumVoices(); ++i)
+            if (auto* v = dynamic_cast<WaveVoice*>(synth.getVoice(i)))
+                v->updateDetuneParam(smoothedDetune);
+        lastSentDetune = smoothedDetune;
+    }
+
+    // still need to update wave type and unison count each block (no detune change)
     for (int i = 0; i < synth.getNumVoices(); ++i)
     {
         if (auto* v = dynamic_cast<WaveVoice*>(synth.getVoice(i)))
         {
             v->setWaveType(selectedType);
             v->setCurrentActiveUnisonVoices(unisonCount + 1);
-            v->setDetuneParam(detuneValue);
         }
     }
 
+    // process MIDI + render
     keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
     synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
-
 }
 
 //==============================================================================

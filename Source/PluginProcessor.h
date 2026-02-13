@@ -63,6 +63,16 @@ public:
 private:
     juce::Synthesiser       synth;
     juce::MidiKeyboardState keyboardState;
+
+    // add near existing private members
+    float smoothedDetune = 0.0f;
+    bool  smoothedDetuneInitialized = false;
+    float lastSentDetune = 0.0f;
+    // smoothing time constant (seconds) — increase to make knob slower / smoother
+    float detuneTauSeconds = 0.001f;
+    // deadband (cents) to avoid tiny changes producing audible artifacts
+    float detuneUpdateThreshold = 0.5f;
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicJuceSynthAudioProcessor)
 };

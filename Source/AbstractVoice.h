@@ -37,7 +37,7 @@ class AbstractVoice : public juce::SynthesiserVoice
         void	        pitchWheelMoved(int) override {}
         void	        controllerMoved(int, int) override {}
         void            setCurrentActiveUnisonVoices(const int unisonVoice);
-        void            setDetuneParam(const float detune);
+        void            updateDetuneParam(const float detune);
 
 
     protected:
@@ -47,6 +47,8 @@ class AbstractVoice : public juce::SynthesiserVoice
         float   amplitude = 0.0f;
         float   phases[MAX_UNISON];
         float   phaseIncrements[MAX_UNISON];
+        float   phaseIncrementTargets[MAX_UNISON] = {};
+
 
         // simple per-voice attack to avoid clicks on note-on
         static constexpr int attackLengthSamples = 64;
@@ -54,6 +56,8 @@ class AbstractVoice : public juce::SynthesiserVoice
 
         float   detuneParam = 2.0f;
         int     currentActiveUnisonVoices = 3;
+        float   detuneSmoothingTauSeconds = 0.01f;
+        float   detuneSmoothingAlpha = 0.001f;
 
         //std::atomic<float>* detuneParam = nullptr;
 };
