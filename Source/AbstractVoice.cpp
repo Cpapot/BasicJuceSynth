@@ -26,7 +26,6 @@ void            AbstractVoice::updateADSR(const float attack, const float decay,
     adsr.setParameters(adsrParams);
 }
 
-
 void AbstractVoice::setCurrentActiveUnisonVoices(const int unisonVoice)
 {
     currentActiveUnisonVoices = juce::jlimit(1, MAX_UNISON, unisonVoice);

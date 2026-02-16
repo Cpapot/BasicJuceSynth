@@ -11,34 +11,21 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "PluginProcessor.h"
+#include "EnvKnobs.h"
+#include "EnvPreview.h"
 
 class EnvEditor : public juce::Component
 {
     public:
-        EnvEditor(juce::AudioProcessorValueTreeState& state);
+        EnvEditor(juce::AudioProcessorValueTreeState& apvts);
         ~EnvEditor() override = default;
 
-        void paint(juce::Graphics&) override;
+        void paint(juce::Graphics& g) override;
         void resized() override;
+
     private:
-        juce::AudioProcessorValueTreeState&                                     apvts;
+        std::unique_ptr<EnvKnobs>           envKnobs;
+        std::unique_ptr<EnvPreview>         envPreview;
 
-        juce::Label                                                             attackLabel;
-        juce::Slider                                                            attackKnob;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>   attackAttachment;
-
-        juce::Label                                                             decayLabel;
-        juce::Slider                                                            decayKnob;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>   decayAttachment;
-
-        juce::Label                                                             sustainLabel;
-        juce::Slider                                                            sustainKnob;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>   sustainAttachment;
-
-        juce::Label                                                             releaseLabel;
-        juce::Slider                                                            releaseKnob;
-        std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>   releaseAttachment;
-
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EnvEditor)
+        juce::AudioProcessorValueTreeState& apvts;
 };

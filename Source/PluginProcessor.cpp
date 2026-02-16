@@ -20,28 +20,18 @@ static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout
     // Wave type parameter (used by the voices)
     StringArray waveChoices { "Sine", "Saw", "Square", "Triangle", "Noise" };
     layout.add (std::make_unique<AudioParameterChoice> ("WAVE_TYPE", "Wave Type", waveChoices, 0));
-
     StringArray unisonChoice{ "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16" };
     layout.add(std::make_unique<AudioParameterChoice>("UNISON_COUNT", "Unison Count", unisonChoice, 0));
-
-    layout.add(std::make_unique<juce::AudioParameterFloat>("UNISON_DETUNE", "Detune", juce::NormalisableRange<float>(0.0f, 100.0f), 0.0f));
-
+    layout.add(std::make_unique<juce::AudioParameterFloat>("UNISON_DETUNE", "Detune",
+        juce::NormalisableRange<float>(0.0f, 100.0f), 0.0f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("ENV_ATTACK", "Attack",
-        juce::NormalisableRange<float>(0.001f, 2.0f, 0.001f, 0.2f), 0.01f));
+        juce::NormalisableRange<float>(0.001f, 2.0f, 0.001f, 0.2f), 0.001f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("ENV_DECAY", "Decay",
-        juce::NormalisableRange<float>(0.001f, 2.0f, 0.001f, 0.2f), 0.2f));
+        juce::NormalisableRange<float>(0.001f, 2.0f, 0.001f, 0.2f), 2.0f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("ENV_SUSTAIN", "Sustain",
-        juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.8f));
+        juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 1.0f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("ENV_RELEASE", "Release",
-        juce::NormalisableRange<float>(0.001f, 5.0f, 0.001f, 0.2f), 0.5f));
-
-    // Add more parameters here as needed. Example:
-    // layout.add(std::make_unique<AudioParameterFloat>(
-    //     "gain",
-    //     "Gain",
-    //     juce::NormalisableRange<float>(0.0f, 1.0f),
-    //     0.5f));
-    
+        juce::NormalisableRange<float>(0.001f, 5.0f, 0.001f, 0.2f), 0.001f));    
     return layout;
 }
 

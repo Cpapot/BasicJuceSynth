@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "EnvKnobs.h"
+#include "EnvPreview.h"
 #include "EnvEditor.h"
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
@@ -32,6 +34,8 @@ class BasicJuceSynthAudioProcessorEditor  : public juce::AudioProcessorEditor
         juce::MidiKeyboardState&        keyboardState;
         juce::MidiKeyboardComponent     keyboardComponent;
 
+        std::unique_ptr<EnvKnobs>       envKnobs;
+        std::unique_ptr<EnvPreview>     envPreview;
         std::unique_ptr<EnvEditor>      envEditor;
 
         juce::ComboBox                                                          unisonSelector;
@@ -42,7 +46,6 @@ class BasicJuceSynthAudioProcessorEditor  : public juce::AudioProcessorEditor
 
         juce::Slider                                                            unisonDetuneKnob;
         std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>   unisonDetuneAttachment;
-
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicJuceSynthAudioProcessorEditor)
 };

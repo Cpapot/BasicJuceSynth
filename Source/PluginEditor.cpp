@@ -42,6 +42,12 @@ BasicJuceSynthAudioProcessorEditor::BasicJuceSynthAudioProcessorEditor (BasicJuc
     unisonDetuneKnob.setRange(0.0f, 100.0f, 0.1f);
     unisonDetuneAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "UNISON_DETUNE", unisonDetuneKnob);
 
+/*    envKnobs = std::make_unique<EnvKnobs>(audioProcessor.apvts);
+    addAndMakeVisible(envKnobs.get());
+
+    envPreview = std::make_unique<EnvPreview>(audioProcessor.apvts);
+    addAndMakeVisible(envPreview.get());*/
+
     envEditor = std::make_unique<EnvEditor>(audioProcessor.apvts);
     addAndMakeVisible(envEditor.get());
 }
@@ -60,7 +66,10 @@ void BasicJuceSynthAudioProcessorEditor::paint (juce::Graphics& g)
     waveSelector.setBounds(20, 20, 100, 30);
     unisonSelector.setBounds(20, 55, 60, 30);
     unisonDetuneKnob.setBounds(100, 100, 50, 50);
-    envEditor->setBounds(20, 250, (getWidth() / 2) - 20, (getHeight() / 2) - 20 - 60); // ajuste selon layout
+
+    envEditor->setBounds(20, 200, (getWidth() / 2) - 20, (getHeight() / 2) - 50);
+    //envKnobs->setBounds(20, 250, (getWidth() / 2) - 20, (getHeight() / 2) - 20 - 60);
+    //envPreview->setBounds(100, 100, 100, 100);
 }
 
 void BasicJuceSynthAudioProcessorEditor::resized()

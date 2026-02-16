@@ -13,9 +13,13 @@
             file="Source/PluginProcessor.h"/>
       <FILE id="t3wGFG" name="EnvEditor.h" compile="0" resource="0" file="Source/EnvEditor.h"/>
       <FILE id="WFHkXG" name="EnvEditor.cpp" compile="1" resource="0" file="Source/EnvEditor.cpp"/>
+      <FILE id="QJvIPq" name="EnvPreview.cpp" compile="1" resource="0" file="Source/EnvPreview.cpp"/>
       <FILE id="WCjLW0" name="AbstractVoice.cpp" compile="1" resource="0"
             file="Source/AbstractVoice.cpp"/>
+      <FILE id="nC0R6A" name="EnvPreview.h" compile="0" resource="0" file="Source/EnvPreview.h"/>
       <FILE id="prXWVF" name="AbstractVoice.h" compile="0" resource="0" file="Source/AbstractVoice.h"/>
+      <FILE id="HEl3f0" name="EnvKnobs.cpp" compile="1" resource="0" file="Source/EnvKnobs.cpp"/>
+      <FILE id="JUsIAn" name="EnvKnobs.h" compile="0" resource="0" file="Source/EnvKnobs.h"/>
       <FILE id="SHmZp0" name="WaveVoice.cpp" compile="1" resource="0" file="Source/WaveVoice.cpp"/>
       <FILE id="mnCVWQ" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
