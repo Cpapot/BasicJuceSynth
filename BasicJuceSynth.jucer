@@ -11,6 +11,8 @@
       <FILE id="NqKKIc" name="WaveVoice.h" compile="0" resource="0" file="Source/WaveVoice.h"/>
       <FILE id="TWYm9J" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
+      <FILE id="t3wGFG" name="EnvEditor.h" compile="0" resource="0" file="Source/EnvEditor.h"/>
+      <FILE id="WFHkXG" name="EnvEditor.cpp" compile="1" resource="0" file="Source/EnvEditor.cpp"/>
       <FILE id="WCjLW0" name="AbstractVoice.cpp" compile="1" resource="0"
             file="Source/AbstractVoice.cpp"/>
       <FILE id="prXWVF" name="AbstractVoice.h" compile="0" resource="0" file="Source/AbstractVoice.h"/>

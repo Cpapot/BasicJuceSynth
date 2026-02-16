@@ -29,6 +29,7 @@ struct VoiceSound : public juce::SynthesiserSound {
 class AbstractVoice : public juce::SynthesiserVoice
 {
     public:
+        AbstractVoice();
         bool	        canPlaySound(juce::SynthesiserSound* sound) override;
         void	        stopNote(float /*velocity*/, bool allowTailOff) override;
         void	        startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound*, int /*currentPitchWheelPosition*/) override;
@@ -38,6 +39,7 @@ class AbstractVoice : public juce::SynthesiserVoice
         void	        controllerMoved(int, int) override {}
         void            setCurrentActiveUnisonVoices(const int unisonVoice);
         void            updateDetuneParam(const float detune);
+        void            updateADSR(const float attack, const float decay, const float substain, const float release);
 
 
     protected:
@@ -49,8 +51,6 @@ class AbstractVoice : public juce::SynthesiserVoice
         float   phaseIncrements[MAX_UNISON];
         float   phaseIncrementTargets[MAX_UNISON] = {};
 
-
-        // simple per-voice attack to avoid clicks on note-on
         static constexpr int attackLengthSamples = 64;
         int attackSamplesRemaining = 0;
 
@@ -59,5 +59,7 @@ class AbstractVoice : public juce::SynthesiserVoice
         float   detuneSmoothingTauSeconds = 0.01f;
         float   detuneSmoothingAlpha = 0.001f;
 
-        //std::atomic<float>* detuneParam = nullptr;
+        juce::ADSR              adsr;
+        juce::ADSR::Parameters  adsrParams;
+
 };

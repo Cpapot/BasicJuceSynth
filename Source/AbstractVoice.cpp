@@ -11,6 +11,22 @@
 #include "AbstractVoice.h"
 #include <cmath>
 
+AbstractVoice::AbstractVoice()
+{
+    adsr.setSampleRate(getSampleRate());
+}
+
+void            AbstractVoice::updateADSR(const float attack, const float decay, const float sustain, const float release)
+{
+    adsrParams.attack = attack;
+    adsrParams.decay = decay;
+    adsrParams.sustain = sustain;
+    adsrParams.release = release;
+
+    adsr.setParameters(adsrParams);
+}
+
+
 void AbstractVoice::setCurrentActiveUnisonVoices(const int unisonVoice)
 {
     currentActiveUnisonVoices = juce::jlimit(1, MAX_UNISON, unisonVoice);
@@ -57,12 +73,19 @@ bool	AbstractVoice::canPlaySound(juce::SynthesiserSound* sound)
 
 void	AbstractVoice::stopNote(float /*velocity*/, bool allowTailOff)
 {
-    clearCurrentNote();
-    amplitude = 0.0f;
+    if (allowTailOff)
+
+        adsr.noteOff();
+    else
+    {
+        adsr.reset();
+        clearCurrentNote();
+    }
 }
 
 void	AbstractVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound*, int /*currentPitchWheelPosition*/)
 {
+    adsr.noteOn();
     frequency = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
     amplitude = velocity * 0.15f;
     const double sr = getSampleRate();

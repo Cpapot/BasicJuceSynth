@@ -26,6 +26,15 @@ static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("UNISON_DETUNE", "Detune", juce::NormalisableRange<float>(0.0f, 100.0f), 0.0f));
 
+    layout.add(std::make_unique<juce::AudioParameterFloat>("ENV_ATTACK", "Attack",
+        juce::NormalisableRange<float>(0.001f, 2.0f, 0.001f, 0.2f), 0.01f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("ENV_DECAY", "Decay",
+        juce::NormalisableRange<float>(0.001f, 2.0f, 0.001f, 0.2f), 0.2f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("ENV_SUSTAIN", "Sustain",
+        juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.8f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("ENV_RELEASE", "Release",
+        juce::NormalisableRange<float>(0.001f, 5.0f, 0.001f, 0.2f), 0.5f));
+
     // Add more parameters here as needed. Example:
     // layout.add(std::make_unique<AudioParameterFloat>(
     //     "gain",
@@ -184,9 +193,20 @@ void BasicJuceSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
         unisonCount = juce::jlimit(0, 15, (int)std::lround(*p));
 
     float detuneValue = 0.5f;
-
     if (auto* p = apvts.getRawParameterValue("UNISON_DETUNE"))
         detuneValue = *p;
+
+    float attack, decay, sustain, release;
+    if (auto* p = apvts.getRawParameterValue("ENV_ATTACK"))
+        attack = *p;
+    if (auto* p = apvts.getRawParameterValue("ENV_DECAY"))
+        decay = *p;
+    if (auto* p = apvts.getRawParameterValue("ENV_SUSTAIN"))
+        sustain = *p;
+    if (auto* p = apvts.getRawParameterValue("ENV_RELEASE"))
+        release = *p;
+    
+
 
     const double sr = getSampleRate();
     const int numSamples = buffer.getNumSamples();
@@ -216,6 +236,7 @@ void BasicJuceSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
         {
             v->setWaveType(selectedType);
             v->setCurrentActiveUnisonVoices(unisonCount + 1);
+            v->updateADSR(attack, decay, sustain, release);
         }
     }
 

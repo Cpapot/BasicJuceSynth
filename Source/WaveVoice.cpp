@@ -6,6 +6,11 @@ void WaveVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int star
 	// simple unison rendering: mix all active unison voices and write to output
 	if (amplitude <= 0.0f)
 		return;
+	if (!adsr.isActive())
+	{
+		clearCurrentNote();
+		return;
+	}
 
 	const int numChannels = outputBuffer.getNumChannels();
 	const int numVoices = juce::jlimit (1, MAX_UNISON, currentActiveUnisonVoices);
@@ -18,6 +23,7 @@ void WaveVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int star
 
 	for (int sample = 0; sample < numSamples; ++sample)
 	{
+		float adsrGain = adsr.getNextSample();
 		float leftSum = 0.0f;
 		float rightSum = 0.0f;
 
@@ -82,13 +88,13 @@ void WaveVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int star
 		if (numChannels == 1)
 		{
 			const float mono = 0.5f * (leftSum + rightSum);
-			outputBuffer.addSample(0, startSample + sample, mono);
+			outputBuffer.addSample(0, startSample + sample, mono * adsrGain);
 		}
 		else
 		{
 			// channel 0 = left, channel 1 = right
-			outputBuffer.addSample(0, startSample + sample, leftSum);
-			outputBuffer.addSample(1, startSample + sample, rightSum);
+			outputBuffer.addSample(0, startSample + sample, leftSum * adsrGain);
+			outputBuffer.addSample(1, startSample + sample, rightSum * adsrGain);
 
 			// For any extra channels, write a center mix
 			if (numChannels > 2)
