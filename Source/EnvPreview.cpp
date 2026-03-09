@@ -29,7 +29,7 @@ void    EnvPreview::paint(juce::Graphics& g)
     float sustain = getParam("ENV_SUSTAIN");
     float release = getParam("ENV_RELEASE");
 
-    float totalTime = std::max(0.001f, attack + decay + release + sustainDisplayTime);
+    float totalTime = 9;
     auto timeToX = [&](float t) { return bounds.getX() + (t / totalTime) * bounds.getWidth(); };
     auto ampToY = [&](float amp) { return bounds.getBottom() - amp * bounds.getHeight(); };
 
@@ -38,7 +38,7 @@ void    EnvPreview::paint(juce::Graphics& g)
     p.lineTo(timeToX(attack), ampToY(1.0f));                   // attack
     p.lineTo(timeToX(attack + decay), ampToY(sustain));        // decay
     p.lineTo(timeToX(attack + decay + sustainDisplayTime), ampToY(sustain)); // sustain line
-    p.lineTo(timeToX(totalTime), ampToY(0.0f));                // release
+    p.lineTo(timeToX(release + attack + decay + sustainDisplayTime), ampToY(0.0f));                // release
     g.setColour(juce::Colours::lightblue);
     g.strokePath(p, juce::PathStrokeType(2.0f));
 }

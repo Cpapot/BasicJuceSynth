@@ -29,15 +29,15 @@ EnvKnobs::EnvKnobs(juce::AudioProcessorValueTreeState& state) : apvts(state)
     decayAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, "ENV_DECAY", decayKnob);
 
     sustainKnob.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
-    sustainKnob.setTextBoxStyle(juce::Slider::TextBoxRight, false, 60, 15);
+    sustainKnob.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 60, 15);
     sustainKnob.setRange(0.0f, 1.0f, 1.0f);
     sustainLabel.setText("Sustain", juce::dontSendNotification);
     addAndMakeVisible(sustainKnob);
     addAndMakeVisible(sustainLabel);
     sustainAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, "ENV_SUSTAIN", sustainKnob);
 
-    releaseKnob.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
-    releaseKnob.setTextBoxStyle(juce::Slider::TextBoxRight, false, 60, 15);
+    releaseKnob.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
+    releaseKnob.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 60, 15);
     releaseKnob.setRange(0.001f, 5.0f, 0.001f);
     releaseLabel.setText("Release", juce::dontSendNotification);
     releaseLabel.setAlwaysOnTop(true);

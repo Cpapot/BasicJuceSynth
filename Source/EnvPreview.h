@@ -24,5 +24,5 @@ class EnvPreview : public juce::Component, private juce::Timer
         float getParam(const char* id) const;
 
         juce::AudioProcessorValueTreeState& apvts;
-        const float                         sustainDisplayTime = 0.2f;
+        const float                         sustainDisplayTime = 0.01f;
 };
