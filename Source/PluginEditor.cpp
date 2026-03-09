@@ -50,6 +50,9 @@ BasicJuceSynthAudioProcessorEditor::BasicJuceSynthAudioProcessorEditor (BasicJuc
 
     envEditor = std::make_unique<EnvEditor>(audioProcessor.apvts);
     addAndMakeVisible(envEditor.get());
+
+    filterEditor = std::make_unique<FilterEditor>(audioProcessor.apvts);
+    addAndMakeVisible(filterEditor.get());
 }
 
 BasicJuceSynthAudioProcessorEditor::~BasicJuceSynthAudioProcessorEditor()
@@ -70,6 +73,8 @@ void BasicJuceSynthAudioProcessorEditor::paint (juce::Graphics& g)
     envEditor->setBounds(20, 200, (getWidth() / 2) - 20, (getHeight() / 2) - 50);
     //envKnobs->setBounds(20, 250, (getWidth() / 2) - 20, (getHeight() / 2) - 20 - 60);
     //envPreview->setBounds(100, 100, 100, 100);
+
+    filterEditor->setBounds((getWidth() / 2) + 20, 20, (getWidth() / 2) - 20, (getHeight() / 2) - 50);
 }
 
 void BasicJuceSynthAudioProcessorEditor::resized()

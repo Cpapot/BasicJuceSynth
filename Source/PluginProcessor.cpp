@@ -31,7 +31,11 @@ static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout
     layout.add(std::make_unique<juce::AudioParameterFloat>("ENV_SUSTAIN", "Sustain",
         juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 1.0f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("ENV_RELEASE", "Release",
-        juce::NormalisableRange<float>(0.001f, 5.0f, 0.001f, 0.2f), 0.001f));    
+        juce::NormalisableRange<float>(0.001f, 5.0f, 0.001f, 0.2f), 0.001f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTER_CUTOFF", "CutOff",
+        juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f), 1000.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("FILTER_RES", "Res",
+        juce::NormalisableRange<float>(0.001f, 10.0f, 0.001f), 1.0f));
     return layout;
 }
 
@@ -128,10 +132,29 @@ void BasicJuceSynthAudioProcessor::changeProgramName (int index, const juce::Str
 //==============================================================================
 void BasicJuceSynthAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    spec.sampleRate = sampleRate;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = getTotalNumOutputChannels();
 
+    if (spec.numChannels > 0)
+    {
+        filterChain.prepare(spec);
+    }
     synth.setCurrentPlaybackSampleRate(sampleRate);
+}
+
+void BasicJuceSynthAudioProcessor::updateFilter()
+{
+    auto& filter = filterChain.get<0>();
+    filter.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
+    float cutOff;
+    if (auto* p = apvts.getRawParameterValue("FILTER_CUTOFF"))
+        cutOff = *p;
+    filter.setCutoffFrequency(cutOff);
+    float res;
+    if (auto* p = apvts.getRawParameterValue("FILTER_RES"))
+        res = *p;
+    filter.setResonance(res);
 }
 
 void BasicJuceSynthAudioProcessor::releaseResources()
@@ -233,6 +256,14 @@ void BasicJuceSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     // process MIDI + render
     keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
     synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
+
+
+        juce::dsp::AudioBlock<float> block(buffer);
+        juce::dsp::ProcessContextReplacing<float> context(block);
+
+        updateFilter();
+
+        filterChain.process(context);
 }
 
 //==============================================================================

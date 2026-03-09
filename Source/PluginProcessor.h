@@ -10,6 +10,8 @@
 
 #include <JuceHeader.h>
 #include "WaveVoice.h"
+#include <juce_dsp/juce_dsp.h>
+
 
 //==============================================================================
 /**
@@ -59,6 +61,7 @@ public:
 
     juce::AudioProcessorValueTreeState                  apvts;
 
+    void updateFilter();
 
 private:
     juce::Synthesiser       synth;
@@ -72,6 +75,11 @@ private:
     float detuneTauSeconds = 0.001f;
     // deadband (cents) to avoid tiny changes producing audible artifacts
     float detuneUpdateThreshold = 0.5f;
+
+    using Filter = juce::dsp::StateVariableTPTFilter<float>;
+    Filter filter;
+    juce::dsp::ProcessSpec spec;
+    juce::dsp::ProcessorChain<Filter> filterChain;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicJuceSynthAudioProcessor)

@@ -13,6 +13,7 @@
 #include "EnvEditor.h"
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "FilterEditor.h"
 
 //==============================================================================
 /**
@@ -37,6 +38,8 @@ class BasicJuceSynthAudioProcessorEditor  : public juce::AudioProcessorEditor
         std::unique_ptr<EnvKnobs>       envKnobs;
         std::unique_ptr<EnvPreview>     envPreview;
         std::unique_ptr<EnvEditor>      envEditor;
+        std::unique_ptr<FilterEditor>   filterEditor;
+
 
         juce::ComboBox                                                          unisonSelector;
         std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> unisonAttachment;
