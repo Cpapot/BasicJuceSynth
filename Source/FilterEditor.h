@@ -24,6 +24,10 @@ class FilterEditor : public juce::Component
     private:
         juce::AudioProcessorValueTreeState& apvts;
 
+        juce::ComboBox                                                          filterSelector;
+        std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> filterAttachement;
+
+
         juce::Label                                                             cutOffLabel;
         juce::Slider                                                            cutOffKnob;
         std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>   cutOffAttachement;

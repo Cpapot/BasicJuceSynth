@@ -12,6 +12,15 @@
 
 FilterEditor::FilterEditor(juce::AudioProcessorValueTreeState& state) : apvts(state)
 {
+    filterSelector.addItem("High12", 1);
+    filterSelector.addItem("High24", 2);
+    filterSelector.addItem("Low12", 3);
+    filterSelector.addItem("Low24", 4);
+    filterSelector.addItem("Band12", 5);
+    filterSelector.addItem("Band24", 6);
+    addAndMakeVisible(filterSelector);
+    filterAttachement = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(apvts, "FILTER_TYPE", filterSelector);
+
     cutOffKnob.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     cutOffKnob.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 60, 15);
     cutOffKnob.setRange(20.0f, 20000.0f, 1.0f);
@@ -37,6 +46,8 @@ void FilterEditor::paint(juce::Graphics& g)
 void FilterEditor::resized()
 {
     auto area = getLocalBounds().reduced(6);
+    filterSelector.setBounds(5, 5, area.getWidth(), 40 );
+    area.removeFromTop(50);
     const int cellW = area.getWidth() / 2;
     const int labelH = 14;
     const int availH = area.getHeight();

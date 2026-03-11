@@ -77,9 +77,12 @@ private:
     float detuneUpdateThreshold = 0.5f;
 
     using Filter = juce::dsp::StateVariableTPTFilter<float>;
-    Filter filter;
-    juce::dsp::ProcessSpec spec;
-    juce::dsp::ProcessorChain<Filter> filterChain;
+    juce::dsp::ProcessorChain<Filter, Filter> filterChain;
+
+    enum class FilterSlope { dB12, dB24 };
+    FilterSlope                             currentSlope = FilterSlope::dB24;
+    bool                                    isFilterEnabled = true;
+    juce::dsp::StateVariableTPTFilterType   currentType = juce::dsp::StateVariableTPTFilterType::highpass;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicJuceSynthAudioProcessor)

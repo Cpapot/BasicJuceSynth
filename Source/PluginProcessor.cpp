@@ -17,13 +17,13 @@ static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout
 
     AudioProcessorValueTreeState::ParameterLayout layout;
 
-    // Wave type parameter (used by the voices)
     StringArray waveChoices { "Sine", "Saw", "Square", "Triangle", "Noise" };
     layout.add (std::make_unique<AudioParameterChoice> ("WAVE_TYPE", "Wave Type", waveChoices, 0));
     StringArray unisonChoice{ "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16" };
     layout.add(std::make_unique<AudioParameterChoice>("UNISON_COUNT", "Unison Count", unisonChoice, 0));
     layout.add(std::make_unique<juce::AudioParameterFloat>("UNISON_DETUNE", "Detune",
         juce::NormalisableRange<float>(0.0f, 100.0f), 0.0f));
+
     layout.add(std::make_unique<juce::AudioParameterFloat>("ENV_ATTACK", "Attack",
         juce::NormalisableRange<float>(0.001f, 2.0f, 0.001f, 0.2f), 0.001f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("ENV_DECAY", "Decay",
@@ -32,10 +32,13 @@ static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout
         juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 1.0f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("ENV_RELEASE", "Release",
         juce::NormalisableRange<float>(0.001f, 5.0f, 0.001f, 0.2f), 0.001f));
+
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTER_CUTOFF", "CutOff",
-        juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f), 1000.0f));
+        juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 0.5f), 1000.0f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTER_RES", "Res",
         juce::NormalisableRange<float>(0.001f, 10.0f, 0.001f), 1.0f));
+    StringArray filterChoice{ "lowPass12", "lowPass24", "highPass12", "highPass24", "bandPass12", "bandPass24" };
+    layout.add(std::make_unique<AudioParameterChoice>("FILTER_TYPE", "Filter Type", filterChoice, 0));
     return layout;
 }
 
@@ -132,6 +135,8 @@ void BasicJuceSynthAudioProcessor::changeProgramName (int index, const juce::Str
 //==============================================================================
 void BasicJuceSynthAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    juce::dsp::ProcessSpec spec;
+
     spec.sampleRate = sampleRate;
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = getTotalNumOutputChannels();
@@ -143,18 +148,54 @@ void BasicJuceSynthAudioProcessor::prepareToPlay (double sampleRate, int samples
     synth.setCurrentPlaybackSampleRate(sampleRate);
 }
 
+// to clean inside a new class
 void BasicJuceSynthAudioProcessor::updateFilter()
 {
-    auto& filter = filterChain.get<0>();
-    filter.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
-    float cutOff;
-    if (auto* p = apvts.getRawParameterValue("FILTER_CUTOFF"))
-        cutOff = *p;
-    filter.setCutoffFrequency(cutOff);
-    float res;
-    if (auto* p = apvts.getRawParameterValue("FILTER_RES"))
-        res = *p;
-    filter.setResonance(res);
+    if (isFilterEnabled == false)
+    {
+        filterChain.setBypassed<0>(true);
+        filterChain.setBypassed<1>(true);
+        return ;
+    }
+    else
+        filterChain.setBypassed<0>(false);
+
+    auto& filter1 = filterChain.get<0>();
+    auto& filter2 = filterChain.get<1>();
+
+    float cutOff, res;
+    if (auto* p = apvts.getRawParameterValue("FILTER_CUTOFF")) cutOff = *p;
+    if (auto* p = apvts.getRawParameterValue("FILTER_RES")) res = *p;
+
+    int selectedFilter = 0;
+    if (auto* p = apvts.getRawParameterValue("FILTER_TYPE"))
+        selectedFilter = (int)std::lround(*p);
+
+    if ((selectedFilter % 2) == 0)
+        currentSlope = FilterSlope::dB12;
+    else
+        currentSlope = FilterSlope::dB24;
+
+    if (selectedFilter <= 1)
+        currentType = juce::dsp::StateVariableTPTFilterType::highpass;
+    else if (selectedFilter <= 3)
+        currentType = juce::dsp::StateVariableTPTFilterType::lowpass;
+    else
+        currentType = juce::dsp::StateVariableTPTFilterType::bandpass;
+
+    filter1.setType(currentType);
+    filter1.setCutoffFrequency(cutOff);
+    filter1.setResonance(res);
+
+    if (currentSlope == FilterSlope::dB24)
+    {
+        filterChain.setBypassed<1>(false);
+        filter2.setType(currentType);
+        filter2.setCutoffFrequency(cutOff);
+        filter2.setResonance(res);
+    }
+    else
+        filterChain.setBypassed<1>(true);
 }
 
 void BasicJuceSynthAudioProcessor::releaseResources()
@@ -220,7 +261,6 @@ void BasicJuceSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
         release = *p;
     
 
-
     const double sr = getSampleRate();
     const int numSamples = buffer.getNumSamples();
 
@@ -242,7 +282,6 @@ void BasicJuceSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
         lastSentDetune = smoothedDetune;
     }
 
-    // still need to update wave type and unison count each block (no detune change)
     for (int i = 0; i < synth.getNumVoices(); ++i)
     {
         if (auto* v = dynamic_cast<WaveVoice*>(synth.getVoice(i)))
@@ -253,17 +292,16 @@ void BasicJuceSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
         }
     }
 
-    // process MIDI + render
+    updateFilter();
+
     keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
     synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 
 
-        juce::dsp::AudioBlock<float> block(buffer);
-        juce::dsp::ProcessContextReplacing<float> context(block);
+    juce::dsp::AudioBlock<float> block(buffer);
+    juce::dsp::ProcessContextReplacing<float> context(block);
 
-        updateFilter();
-
-        filterChain.process(context);
+    filterChain.process(context);
 }
 
 //==============================================================================
