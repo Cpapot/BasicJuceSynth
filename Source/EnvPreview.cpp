@@ -12,7 +12,7 @@
 
 EnvPreview::EnvPreview(juce::AudioProcessorValueTreeState& apvts) : apvts(apvts)
 {
-    startTimerHz(30);
+    startTimerHz(60);
 }
 
 float EnvPreview::getParam(const char* id) const

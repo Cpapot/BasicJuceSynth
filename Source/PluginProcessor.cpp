@@ -36,9 +36,10 @@ static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTER_CUTOFF", "CutOff",
         juce::NormalisableRange<float>(20.0f, 20000.0f, 1.0f, 0.5f), 1000.0f));
     layout.add(std::make_unique<juce::AudioParameterFloat>("FILTER_RES", "Res",
-        juce::NormalisableRange<float>(0.001f, 10.0f, 0.001f), 1.0f));
+        juce::NormalisableRange<float>(0.001f, 1.5f, 0.001f), 1.0f));
     StringArray filterChoice{ "lowPass12", "lowPass24", "highPass12", "highPass24", "bandPass12", "bandPass24" };
     layout.add(std::make_unique<AudioParameterChoice>("FILTER_TYPE", "Filter Type", filterChoice, 0));
+    layout.add(std::make_unique<juce::AudioParameterBool>("FILTER_ENABLED", "Filter",  false));
     return layout;
 }
 
@@ -151,6 +152,8 @@ void BasicJuceSynthAudioProcessor::prepareToPlay (double sampleRate, int samples
 // to clean inside a new class
 void BasicJuceSynthAudioProcessor::updateFilter()
 {
+    if (auto* p = apvts.getRawParameterValue("FILTER_ENABLED")) isFilterEnabled = *p;
+
     if (isFilterEnabled == false)
     {
         filterChain.setBypassed<0>(true);

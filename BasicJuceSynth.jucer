@@ -20,7 +20,10 @@
             file="Source/FilterEditor.cpp"/>
       <FILE id="gjZK0D" name="FilterEditor.h" compile="0" resource="0" file="Source/FilterEditor.h"/>
       <FILE id="nC0R6A" name="EnvPreview.h" compile="0" resource="0" file="Source/EnvPreview.h"/>
+      <FILE id="ubHaVA" name="FilterPreview.cpp" compile="1" resource="0"
+            file="Source/FilterPreview.cpp"/>
       <FILE id="prXWVF" name="AbstractVoice.h" compile="0" resource="0" file="Source/AbstractVoice.h"/>
+      <FILE id="q7nnbT" name="FilterPreview.h" compile="0" resource="0" file="Source/FilterPreview.h"/>
       <FILE id="HEl3f0" name="EnvKnobs.cpp" compile="1" resource="0" file="Source/EnvKnobs.cpp"/>
       <FILE id="JUsIAn" name="EnvKnobs.h" compile="0" resource="0" file="Source/EnvKnobs.h"/>
       <FILE id="SHmZp0" name="WaveVoice.cpp" compile="1" resource="0" file="Source/WaveVoice.cpp"/>

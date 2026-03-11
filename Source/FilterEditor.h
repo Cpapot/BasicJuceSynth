@@ -11,6 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "FilterPreview.h"
 
 class FilterEditor : public juce::Component
 {
@@ -22,11 +23,15 @@ class FilterEditor : public juce::Component
         void resized() override;
 
     private:
-        juce::AudioProcessorValueTreeState& apvts;
+        std::unique_ptr<FilterPreview>                                          filterPreview;
+
+        juce::AudioProcessorValueTreeState&                                     apvts;
 
         juce::ComboBox                                                          filterSelector;
         std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> filterAttachement;
 
+        juce::ToggleButton                                                      filterBypassButton;
+        std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>   filterBypassAttachement;
 
         juce::Label                                                             cutOffLabel;
         juce::Slider                                                            cutOffKnob;

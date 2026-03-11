@@ -36,6 +36,13 @@ FilterEditor::FilterEditor(juce::AudioProcessorValueTreeState& state) : apvts(st
     addAndMakeVisible(resKnob);
     addAndMakeVisible(resLabel);
     resAttachement = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, "FILTER_RES", resKnob);
+
+    //filterBypassButton.set
+    addAndMakeVisible(filterBypassButton);
+    filterBypassAttachement = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(apvts, "FILTER_ENABLED", filterBypassButton);
+
+    filterPreview = std::make_unique<FilterPreview>(apvts);
+    addAndMakeVisible(filterPreview.get());
 }
 
 void FilterEditor::paint(juce::Graphics& g)
@@ -46,8 +53,12 @@ void FilterEditor::paint(juce::Graphics& g)
 void FilterEditor::resized()
 {
     auto area = getLocalBounds().reduced(6);
-    filterSelector.setBounds(5, 5, area.getWidth(), 40 );
+    filterSelector.setBounds(5, 5, area.getWidth() - 50, 40 );
+    filterBypassButton.setBounds(area.getWidth() - 25 ,5 ,40 ,40);
     area.removeFromTop(50);
+
+    filterPreview->setBounds(area.removeFromTop(70));
+
     const int cellW = area.getWidth() / 2;
     const int labelH = 14;
     const int availH = area.getHeight();
@@ -71,6 +82,4 @@ void FilterEditor::resized()
                 break;
         }
     }
-
-
 }
