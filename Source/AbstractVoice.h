@@ -38,6 +38,7 @@ class AbstractVoice : public juce::SynthesiserVoice
         void	        pitchWheelMoved(int) override {}
         void	        controllerMoved(int, int) override {}
         void            setCurrentActiveUnisonVoices(const int unisonVoice);
+        void            setCurrentOctaveOffset(int octaveOffset);
         void            updateDetuneParam(const float detune);
         void            updateADSR(const float attack, const float decay, const float substain, const float release);
 
@@ -45,21 +46,22 @@ class AbstractVoice : public juce::SynthesiserVoice
     protected:
         static constexpr int    MAX_UNISON = 16;
 
-        float   frequency = 0.0f;
-        float   amplitude = 0.0f;
-        float   phases[MAX_UNISON];
-        float   phaseIncrements[MAX_UNISON];
-        float   phaseIncrementTargets[MAX_UNISON] = {};
+        float                   frequency = 0.0f;
+        float                   amplitude = 0.0f;
+        float                   phases[MAX_UNISON];
+        float                   phaseIncrements[MAX_UNISON];
+        float                   phaseIncrementTargets[MAX_UNISON] = {};
 
-        static constexpr int attackLengthSamples = 64;
-        int attackSamplesRemaining = 0;
+        static constexpr int    attackLengthSamples = 64;
+        int                     attackSamplesRemaining = 0;
 
-        float   detuneParam = 2.0f;
-        int     currentActiveUnisonVoices = 3;
-        float   detuneSmoothingTauSeconds = 0.01f;
-        float   detuneSmoothingAlpha = 0.001f;
+        float                   detuneParam = 2.0f;
+        int                     currentActiveUnisonVoices = 3;
+        float                   detuneSmoothingTauSeconds = 0.01f;
+        float                   detuneSmoothingAlpha = 0.001f;
 
         juce::ADSR              adsr;
         juce::ADSR::Parameters  adsrParams;
 
+        int                     currentOctaveOffset = 0;
 };

@@ -30,23 +30,21 @@ BasicJuceSynthAudioProcessorEditor::BasicJuceSynthAudioProcessorEditor (BasicJuc
 
     addAndMakeVisible(unisonSelector);
     for (int i = 1; i <= 16; ++i)
-    {
         unisonSelector.addItem(juce::String(i), i);
-    }
     unisonSelector.setSelectedId(1);
     unisonAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "UNISON_COUNT", unisonSelector);
+
+    addAndMakeVisible(octaveOffsetSelector);
+    for (int i = -3; i <= 3; i++)
+        octaveOffsetSelector.addItem(juce::String(i), i + 4);
+    octaveOffsetAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "OCTAVE_OFFSET", octaveOffsetSelector);
+
 
     addAndMakeVisible(unisonDetuneKnob);
     unisonDetuneKnob.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     unisonDetuneKnob.setTextBoxStyle(juce::Slider::NoTextBox, false, 35, 12.5);
     unisonDetuneKnob.setRange(0.0f, 100.0f, 0.1f);
     unisonDetuneAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "UNISON_DETUNE", unisonDetuneKnob);
-
-/*    envKnobs = std::make_unique<EnvKnobs>(audioProcessor.apvts);
-    addAndMakeVisible(envKnobs.get());
-
-    envPreview = std::make_unique<EnvPreview>(audioProcessor.apvts);
-    addAndMakeVisible(envPreview.get());*/
 
     envEditor = std::make_unique<EnvEditor>(audioProcessor.apvts);
     addAndMakeVisible(envEditor.get());
@@ -69,6 +67,7 @@ void BasicJuceSynthAudioProcessorEditor::paint (juce::Graphics& g)
     waveSelector.setBounds(20, 20, 100, 30);
     unisonSelector.setBounds(20, 55, 60, 30);
     unisonDetuneKnob.setBounds(100, 100, 50, 50);
+    octaveOffsetSelector.setBounds(90, 55, 60, 30);
 
     envEditor->setBounds(20, 200, (getWidth() / 2) - 20, (getHeight() / 2) - 50);
     //envKnobs->setBounds(20, 250, (getWidth() / 2) - 20, (getHeight() / 2) - 20 - 60);

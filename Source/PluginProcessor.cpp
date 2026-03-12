@@ -17,8 +17,11 @@ static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout
 
     AudioProcessorValueTreeState::ParameterLayout layout;
 
-    StringArray waveChoices { "Sine", "Saw", "Square", "Triangle", "Noise" };
-    layout.add (std::make_unique<AudioParameterChoice> ("WAVE_TYPE", "Wave Type", waveChoices, 0));
+    StringArray waveChoice { "Sine", "Saw", "Square", "Triangle", "Noise" };
+    layout.add (std::make_unique<AudioParameterChoice> ("WAVE_TYPE", "Wave Type", waveChoice, 0));
+    StringArray octaveChoice{ "-3", "-2", "-1", "0", "1", "2", "3" };
+    layout.add(std::make_unique<AudioParameterChoice>("OCTAVE_OFFSET", "Octave", octaveChoice, 3));
+
     StringArray unisonChoice{ "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16" };
     layout.add(std::make_unique<AudioParameterChoice>("UNISON_COUNT", "Unison Count", unisonChoice, 0));
     layout.add(std::make_unique<juce::AudioParameterFloat>("UNISON_DETUNE", "Detune",
@@ -241,13 +244,13 @@ void BasicJuceSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     
     buffer.clear();
 
-    int selectedType = 0;
+    int selectedType = 0, unisonCount = 1, octaveOffset = 0;
     if (auto* p = apvts.getRawParameterValue ("WAVE_TYPE"))
         selectedType = juce::jlimit (0, 4, (int) std::lround (*p));
-
-    int unisonCount = 1;
     if (auto* p = apvts.getRawParameterValue("UNISON_COUNT"))
         unisonCount = juce::jlimit(0, 15, (int)std::lround(*p));
+    if (auto* p = apvts.getRawParameterValue("OCTAVE_OFFSET"))
+        octaveOffset = juce::jlimit(0, 15, (int)std::lround(*p));
 
     float detuneValue = 0.5f;
     if (auto* p = apvts.getRawParameterValue("UNISON_DETUNE"))
@@ -292,6 +295,7 @@ void BasicJuceSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
             v->setWaveType(selectedType);
             v->setCurrentActiveUnisonVoices(unisonCount + 1);
             v->updateADSR(attack, decay, sustain, release);
+            v->setCurrentOctaveOffset(octaveOffset - 3);
         }
     }
 

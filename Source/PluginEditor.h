@@ -47,6 +47,9 @@ class BasicJuceSynthAudioProcessorEditor  : public juce::AudioProcessorEditor
         juce::ComboBox                                                          waveSelector;
         std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> waveAttachment;
 
+        juce::ComboBox                                                          octaveOffsetSelector;
+        std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> octaveOffsetAttachment;
+
         juce::Slider                                                            unisonDetuneKnob;
         std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>   unisonDetuneAttachment;
 

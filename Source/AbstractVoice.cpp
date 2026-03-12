@@ -16,6 +16,11 @@ AbstractVoice::AbstractVoice()
     adsr.setSampleRate(getSampleRate());
 }
 
+void            AbstractVoice::setCurrentOctaveOffset(int octaveOffset)
+{
+    currentOctaveOffset = octaveOffset;
+}
+
 void            AbstractVoice::updateADSR(const float attack, const float decay, const float sustain, const float release)
 {
     adsrParams.attack = attack;
@@ -85,7 +90,8 @@ void	AbstractVoice::stopNote(float /*velocity*/, bool allowTailOff)
 void	AbstractVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound*, int /*currentPitchWheelPosition*/)
 {
     adsr.noteOn();
-    frequency = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
+    int finalNote = std::clamp(midiNoteNumber + (currentOctaveOffset * 12), 0, 127);
+    frequency = juce::MidiMessage::getMidiNoteInHertz(finalNote);
     amplitude = velocity * 0.15f;
     const double sr = getSampleRate();
     if (sr <= 0.0)
