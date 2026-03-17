@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    AbstractVoice.h
+    Voice.h
     Created: 11 Feb 2026 5:39:03pm
     Author:  coren
 
@@ -26,15 +26,16 @@ struct VoiceSound : public juce::SynthesiserSound {
     bool appliesToChannel(int /*midiChannel*/) override { return true; }
 };
 
-class AbstractVoice : public juce::SynthesiserVoice
+class Voice : public juce::SynthesiserVoice
 {
     public:
-        AbstractVoice();
+        Voice();
         bool	        canPlaySound(juce::SynthesiserSound* sound) override;
         void	        stopNote(float /*velocity*/, bool allowTailOff) override;
         void	        startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound*, int /*currentPitchWheelPosition*/) override;
+        void	        renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples) override;
 
-
+        void	        setWaveType(int type) { currentWaveType = type; }
         void	        pitchWheelMoved(int) override {}
         void	        controllerMoved(int, int) override {}
         void            setCurrentActiveUnisonVoices(const int unisonVoice);
@@ -64,4 +65,5 @@ class AbstractVoice : public juce::SynthesiserVoice
         juce::ADSR::Parameters  adsrParams;
 
         int                     currentOctaveOffset = 0;
+        int		                currentWaveType = Sine;
 };

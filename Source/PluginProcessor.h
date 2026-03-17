@@ -9,7 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "WaveVoice.h"
+#include "Voice.h"
 #include <juce_dsp/juce_dsp.h>
 
 

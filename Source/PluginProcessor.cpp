@@ -8,7 +8,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "WaveVoice.h"
+#include "Voice.h"
 
 //==============================================================================
 static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
@@ -63,7 +63,7 @@ BasicJuceSynthAudioProcessor::BasicJuceSynthAudioProcessor()
       apvts(*this, nullptr, "PARAMETERS", createParameterLayout())
 {
     for (int i = 0; i < 16; ++i) {
-        synth.addVoice(new WaveVoice());
+        synth.addVoice(new Voice());
     }
     synth.addSound(new VoiceSound());
 }
@@ -283,14 +283,14 @@ void BasicJuceSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     if (std::fabs(smoothedDetune - lastSentDetune) > detuneUpdateThreshold)
     {
         for (auto i = 0; i < synth.getNumVoices(); ++i)
-            if (auto* v = dynamic_cast<WaveVoice*>(synth.getVoice(i)))
+            if (auto* v = dynamic_cast<Voice*>(synth.getVoice(i)))
                 v->updateDetuneParam(smoothedDetune);
         lastSentDetune = smoothedDetune;
     }
 
     for (int i = 0; i < synth.getNumVoices(); ++i)
     {
-        if (auto* v = dynamic_cast<WaveVoice*>(synth.getVoice(i)))
+        if (auto* v = dynamic_cast<Voice*>(synth.getVoice(i)))
         {
             v->setWaveType(selectedType);
             v->setCurrentActiveUnisonVoices(unisonCount + 1);
